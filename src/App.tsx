@@ -1,29 +1,52 @@
 import { useState } from 'react'
-import { DATA, x_data, y_data } from './data.js'
+import { DATA, x_data, y_data } from './data'
 import Plot from 'react-plotly.js'
 import { Typography, Button } from '@mui/material'
 import robustPointInPolygon from 'robust-point-in-polygon'
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
+import React from 'react'
 
-const colorFromString = (str, alpha) => {
+const colorFromString = (str: String, alpha: number) => {
   var hash = 0,
-    i, chr, color;
-  for (i = 0; i < str.length; i++) {
+    chr, color;
+  for (let i = 0; i < str.length; i++) {
     chr = str.charCodeAt(i);
     hash = ((hash << 5) - hash) + chr;
     hash |= 0; // Convert to 32bit integer
   }
-  hash = hash.toString(16)
-  color = `rgba(${hash.substring(0, 2)},${hash.substring(2, 4)},${hash.substring(4, 6)},0.25)`
+  const hashString: String = hash.toString(16)
+  color = `rgba(${hashString.substring(0, 2)},${hashString.substring(2, 4)},${hashString.substring(4, 6)},${alpha})`
   return color;
 }
 
-const SimpleDialog = (props) => {
-  const { onClose, selectedValue, open } = props;
+interface XYArray {
+  x: number[],
+  y: number[],
+}
+
+interface PerformanceProperty {
+  name: string,
+  values: XYArray,
+}
+
+interface Chiller {
+  name: string,
+  envelope: XYArray,
+  performance: PerformanceProperty[]
+  active: boolean,
+}
+
+interface DialogProps {
+  selectedValue: Chiller | null,
+  open: boolean,
+  onClose: () => void,
+}
+
+const PlotsDialog = (props: DialogProps) => {
+  const { selectedValue, open, onClose } = props;
 
   const handleClose = () => {
     onClose();
@@ -44,25 +67,25 @@ const SimpleDialog = (props) => {
             <CloseIcon />
           </IconButton>
           <DialogTitle>
-            {selectedValue['name']}
+            {selectedValue.name}
           </DialogTitle>
 
           <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
 
             <Typography>
             </Typography>
-            {['Q', 'COP', 'P'].map((value) => {
+            {selectedValue.performance.map((value) => {
               return (
-                <div style={{ flex: 1 }} key={value}>
+                <div style={{ flex: 1 }} key={value.name}>
                   <Plot data={[{
-                    x: selectedValue[value]['x'],
-                    y: selectedValue[value]['y'],
+                    x: value.values.x,
+                    y: value.values.y,
                     type: 'scatter',
                     hoverinfo: 'text',
                     showlegend: false
                   }]}
                     layout={{
-                      title: value
+                      title: value.name
                     }} />
                 </div>
               )
@@ -76,9 +99,9 @@ const SimpleDialog = (props) => {
 
 
 const App = () => {
-  const [points, setPoints] = useState([[], []]);
+  const [points, setPoints] = useState<XYArray>({ "x": [], "y": [] });
   const [chillerData, setChillerData] = useState(DATA)
-  const [selectedChiller, setSelectedChiller] = useState(null)
+  const [selectedChiller, setSelectedChiller] = useState<Chiller|null>(null)
   const [open, setOpen] = useState(false);
 
 
@@ -102,20 +125,24 @@ const App = () => {
     }
   })
 
-  const handleClick = event => {
+  const handleClick = (event: Plotly.PlotMouseEvent) => {
     const point = event.points[0];
-    setPoints([[...points[0], point.x], [...points[1], point.y]])
-    let temp = chillerData
-    setChillerData(temp.map((chiller) => {
-      var polygon = []
-      for (var ii = 0; ii < chiller.envelope.x.length; ii++) {
-        polygon = [...polygon, [chiller.envelope.x[ii], chiller.envelope.y[ii]]]
-      }
-      if (robustPointInPolygon(polygon, [point.x, point.y]) === 1) {
-        chiller.active = false
-      }
-      return chiller
-    }))
+    const x = point.x
+    const y = point.y
+    if (typeof x == "number" && typeof y == "number") {
+      setPoints({ "x": [...points.x, x], "y": [...points.y, y] })
+      let temp = chillerData
+      setChillerData(temp.map((chiller) => {
+        var polygon : [number,number][] = []
+        for (var ii = 0; ii < chiller.envelope.x.length; ii++) {
+          polygon = [...polygon, [chiller.envelope.x[ii], chiller.envelope.y[ii]]]
+        }
+        if (robustPointInPolygon(polygon, [x, y]) === 1) {
+          chiller.active = false
+        }
+        return chiller
+      }))
+    }
   }
 
   const handleClickOpen = () => {
@@ -127,7 +154,7 @@ const App = () => {
   };
 
   const resetActive = () => {
-    setPoints([[], []])
+    setPoints({ "x": [], "y": [] })
     setChillerData(chillerData.map((chiller) => {
       chiller.active = true
       return chiller
@@ -137,11 +164,15 @@ const App = () => {
   return (
     <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <header>
-        Heatpump Performance
+      <Typography variant={'h4'}>
+          Heatpumps
+        </Typography>
       </header>
       <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+     
+      
         <div style={{ flex: 1 }}>
-          List of options
+        
           {chillerData.map((chiller) => {
             return (
               <div key={chiller.name}>
@@ -159,12 +190,10 @@ const App = () => {
 
 
           <div style={{ flex: 1 }}>
-            <Button onClick={resetActive}>
-              Clear Selected Points
-            </Button>
+            
             <Plot
-              style={{ width: '100%', height: '100%' }}
-              data={[
+              style={{ width: '100%', height: '80%' }}
+              data={([
                 ...chillerTraces,
                 {
                   x: x_data,
@@ -175,15 +204,15 @@ const App = () => {
                   showlegend: false
                 },
                 {
-                  x: points[0],
-                  y: points[1],
+                  x: points.x,
+                  y: points.y,
                   type: 'scatter',
                   hoverinfo: 'text',
                   mode: 'points',
                   showlegend: false,
                   stroke: 'rgba(0,0,0,0)'
                 }
-              ]}
+              ]) as Plotly.Data[]}
               layout={{
                 xaxis: {
                   range: [70, 150]
@@ -198,10 +227,12 @@ const App = () => {
               }}
               onClick={handleClick}
             />
+            <Button onClick={resetActive}>
+              Clear Selected Points
+            </Button>
           </div>
-
         </div>
-        <SimpleDialog
+        <PlotsDialog
           selectedValue={selectedChiller}
           open={open}
           onClose={handleClose}
