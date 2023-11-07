@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Chiller, XYArray } from "./commonInterfaces";
 import { Button } from "@mui/material";
-import React from "react";
 import Plot from "react-plotly.js";
 import robustPointInPolygon from "robust-point-in-polygon";
 import { colorFromString } from "./commonFunctions";
