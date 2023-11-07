@@ -97,9 +97,12 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                         y: points.y,
                         type: 'scatter',
                         hoverinfo: 'text',
-                        mode: 'points',
+                        mode: 'markers',
                         showlegend: false,
-                        stroke: 'rgba(0,0,0,0)'
+                        marker: {
+                            color: 'rgb(219, 64, 82)',
+                            size: 5
+                          }
                     }
                 ]) as Plotly.Data[]}
                 layout={{
