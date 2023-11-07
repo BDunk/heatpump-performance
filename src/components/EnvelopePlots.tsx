@@ -10,8 +10,8 @@ const getGrid = () => {
     var x_data: number[] = []
     var y_data: number[] = []
 
-    for (let i = 70; i < 150; i++) {
-        for (let j = -30; j < 120; j++) {
+    for (let i = -20; i < 120; i=i+2) {
+        for (let j = 65; j < 145; j=j+2) {
             x_data = [...x_data, i]
             y_data = [...y_data, j]
         }
@@ -57,8 +57,13 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
         }
     })
 
+    //const handleHover = (event: Plotly.PlotMouseEvent) =>{
+    //    console.log(event)
+    //}
+
     const handleClick = (event: Plotly.PlotMouseEvent) => {
         const point = event.points[0];
+        console.log(point)
         const x = point.x
         const y = point.y
         if (typeof x == "number" && typeof y == "number") {
@@ -85,14 +90,6 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                 data={([
                     ...chillerTraces,
                     {
-                        x: grid.x,
-                        y: grid.y,
-                        type: 'scatter',
-                        hoverinfo: 'text',
-                        mode: 'none',
-                        showlegend: false
-                    },
-                    {
                         x: points.x,
                         y: points.y,
                         type: 'scatter',
@@ -103,7 +100,16 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                             color: 'rgb(219, 64, 82)',
                             size: 5
                           }
-                    }
+                    },
+                    {
+                        x: grid.x,
+                        y: grid.y,
+                        type: 'scatter',
+                        hoverinfo: 'text',
+                        mode: 'none',
+                        showlegend: false
+                    },
+                    
                 ]) as Plotly.Data[]}
                 layout={{
                     xaxis: {

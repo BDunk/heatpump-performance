@@ -20,8 +20,6 @@ export const DetailDialog = (props: DialogProps) => {
         onClose();
     };
 
-    console.log(selectedValue)
-
     return (
         <Dialog onClose={handleClose} open={open} fullScreen>
             {selectedValue &&
