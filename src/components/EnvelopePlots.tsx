@@ -7,8 +7,8 @@ import robustPointInPolygon from "robust-point-in-polygon";
 import { colorFromString } from "./commonFunctions";
 
 const getGrid = () => {
-    var x_data: number[] = []
-    var y_data: number[] = []
+    let x_data: number[] = []
+    let y_data: number[] = []
 
     for (let i = -20; i < 120; i=i+2) {
         for (let j = 65; j < 145; j=j+2) {
@@ -68,10 +68,10 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
         const y = point.y
         if (typeof x == "number" && typeof y == "number") {
             setPoints({ "x": [...points.x, x], "y": [...points.y, y] })
-            let temp = chillerData
+            const temp = chillerData
             setChillerData(temp.map((chiller) => {
-                var polygon: [number, number][] = []
-                for (var ii = 0; ii < chiller.envelope.x.length; ii++) {
+                let polygon: [number, number][] = []
+                for (let ii = 0; ii < chiller.envelope.x.length; ii++) {
                     polygon = [...polygon, [chiller.envelope.x[ii], chiller.envelope.y[ii]]]
                 }
                 if (robustPointInPolygon(polygon, [x, y]) === 1) {
@@ -87,6 +87,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
 
             <Plot
                 style={{ width: '100%', height: '80%' }}
+                useResizeHandler={true}
                 data={([
                     ...chillerTraces,
                     {
