@@ -1,4 +1,3 @@
-import React from 'react'
 import { useState } from 'react'
 import DATA from './data.json'
 import { Typography } from '@mui/material'
