@@ -107,10 +107,16 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                 ]) as Plotly.Data[]}
                 layout={{
                     xaxis: {
-                        range: [70, 150]
+                        range: [-20, 120],
+                        title:{
+                            text:"T_amb (degF)"
+                        }
                     },
                     yaxis: {
-                        range: [-30, 120]
+                        range: [65, 145],
+                        title:{
+                            text:"T_cond (degF)"
+                        }
                     },
                     legend: {
                         itemclick: false,
