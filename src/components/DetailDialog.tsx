@@ -34,7 +34,6 @@ export const DetailDialog = (props: DialogProps) => {
                             x: chiller.performance[index].values.x,
                             y: chiller.performance[index].values.y,
                             type: 'scatter',
-                            hoverinfo: 'text',
                             line: {
                                 color: colorFromString(chiller['name'], 1)
                             },
@@ -42,6 +41,7 @@ export const DetailDialog = (props: DialogProps) => {
                                 color: colorFromString(chiller['name'], 1)
                             },
                             name: chiller['name'],
+                            hoverinfo: 'x+y+name',
                         } as Plotly.Data
                     })
                 }
