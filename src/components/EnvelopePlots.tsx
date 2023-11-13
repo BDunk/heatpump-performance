@@ -55,8 +55,8 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
             marker: {
                 color: colorFromString(chiller['name'], 1)
             },
-            hoverinfo: 'name+x+y',
             name: chiller['name'],
+            hoverinfo: 'name+x+y',
         }
     })
 
