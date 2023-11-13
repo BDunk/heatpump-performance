@@ -6,7 +6,9 @@ export const colorFromString = (str: String, alpha: number) => {
         hash = ((hash << 5) - hash) + chr;
         hash |= 0; // Convert to 32bit integer
     }
-    const hashString: String = hash.toString(16)
-    color = `rgba(${hashString.substring(0, 2)},${hashString.substring(2, 4)},${hashString.substring(4, 6)},${alpha})`
+    const hashString: String = hash.toString(10)
+    console.log(hashString)
+    color = `hsla(${hashString.substring(1, 4)},50%,    50%,${alpha})`
+    console.group(color)
     return color;
 }
