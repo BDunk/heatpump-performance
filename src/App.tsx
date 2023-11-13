@@ -3,7 +3,6 @@ import DATA from './data.json'
 import { Typography } from '@mui/material'
 import { Chiller } from './components/commonInterfaces'
 import { EnvelopePlots } from './components/EnvelopePlots'
-import { ChillerList } from './components/ChillerList'
 
 const App = () => {
   const [chillerData, setChillerData] = useState<Chiller[]>(DATA)

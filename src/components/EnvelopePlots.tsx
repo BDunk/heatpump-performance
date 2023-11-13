@@ -30,7 +30,6 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
     const [grid,] = useState<XYArray>(getGrid())
     const [rev, setRev] =useState<number>(0)
     const [selectedChiller, setSelectedChiller] = useState<Chiller[]>([])
-    const [open, setOpen] = useState(false);
 
     const resetActive = () => {
         setPoints({ "x": [], "y": [] })
@@ -68,7 +67,6 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
             
             if(point.curveNumber <= chillerTraces.length-1){
                 setSelectedChiller([chillerData[point.curveNumber]]); 
-                handleClickOpen()
             }
             else{
                 const temp_points = {...points}
@@ -107,7 +105,6 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
         setSelectedChiller(chillerData.filter((chiller) => {
             return chiller.active
         }))
-        handleClickOpen()
     }
 
     useEffect(()=>{
@@ -115,13 +112,6 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
         console.log(rev+1)
     },[points])
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     return (
         <>              
@@ -184,8 +174,8 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
             </div>
             <DetailDialog
                 selectedValue={selectedChiller}
-                open={open}
-                onClose={handleClose}
+                open={selectedChiller.length > 0}
+                onClose={()=>setSelectedChiller([])}
             />
         </>
     )

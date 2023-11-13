@@ -25,7 +25,7 @@ export const DetailDialog = (props: DialogProps) => {
     useEffect(()=>{
         const plots: {name:string, values:Plotly.Data[]}[] = []
         if (selectedValue.length>0){
-            Object.keys(selectedValue[0].performance).forEach((key, index)=>{
+            Object.keys(selectedValue[0].performance).forEach((_key, index)=>{
                 const plot = {
                     name: selectedValue[0].performance[index].name,
                     values: selectedValue.map((chiller)=>
