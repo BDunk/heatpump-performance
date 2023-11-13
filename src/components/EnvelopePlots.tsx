@@ -29,7 +29,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
     const [points, setPoints] = useState<XYArray>({ "x": [], "y": [] });
     const [grid,] = useState<XYArray>(getGrid())
     const [rev, setRev] =useState<number>(0)
-    const [selectedChiller, setSelectedChiller] = useState<Chiller | null>(null)
+    const [selectedChiller, setSelectedChiller] = useState<Chiller[]>([])
     const [open, setOpen] = useState(false);
 
     const resetActive = () => {
@@ -67,7 +67,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
         if (typeof x == "number" && typeof y == "number") {
             
             if(point.curveNumber <= chillerTraces.length-1){
-                setSelectedChiller(chillerData[point.curveNumber]); 
+                setSelectedChiller([chillerData[point.curveNumber]]); 
                 handleClickOpen()
             }
             else{
@@ -101,6 +101,13 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                 }))
                 }
             }
+    }
+
+    const comparePlot = () =>{
+        setSelectedChiller(chillerData.filter((chiller) => {
+            return chiller.active
+        }))
+        handleClickOpen()
     }
 
     useEffect(()=>{
@@ -167,9 +174,14 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                 }}
                 onClick={handleClick}
             />
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
             <Button onClick={resetActive}>
                 Clear Selected Points
             </Button>
+            <Button onClick={comparePlot}>
+                Compare Current Options
+            </Button>
+            </div>
             <DetailDialog
                 selectedValue={selectedChiller}
                 open={open}

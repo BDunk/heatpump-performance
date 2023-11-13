@@ -5,23 +5,50 @@ import Dialog from '@mui/material/Dialog';
 import Plot from 'react-plotly.js'
 import { Typography } from '@mui/material'
 import { Chiller } from './commonInterfaces'
+import { useEffect, useState } from 'react';
 
 interface DialogProps {
-    selectedValue: Chiller | null,
+    selectedValue: Chiller[],
     open: boolean,
     onClose: () => void,
 }
 
 export const DetailDialog = (props: DialogProps) => {
     const { selectedValue, open, onClose } = props;
+    const [data, setData] = useState()
 
     const handleClose = () => {
         onClose();
     };
 
+    useEffect(()=>{
+        const plots = []
+        if (selectedValue.length>0){
+            Object.keys(selectedValue[0].performance).forEach((key, index)=>{
+                const plot = {
+                    name: selectedValue[0].performance[index],
+                    values: selectedValue.map((chiller)=>
+                    {
+                        return {
+                            x: chiller.performance[index].values.x,
+                            y: chiller.performance[index].values.y,
+                            type: 'scatter',
+                            hoverinfo: 'text',
+                            showlegend: false
+                        }
+                    })
+                }
+                plots.push(plot)
+            }
+            )
+        }
+        setData(plots)
+
+    }, [selectedValue])
+
     return (
         <Dialog onClose={handleClose} open={open} fullScreen>
-            {selectedValue &&
+            {selectedValue.length > 0 &&
                 <>
                     <IconButton
                         edge="start"
@@ -32,23 +59,17 @@ export const DetailDialog = (props: DialogProps) => {
                         <CloseIcon />
                     </IconButton>
                     <DialogTitle>
-                        {selectedValue.name}
+                        Details
                     </DialogTitle>
 
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', flex: 1 }}>
 
                         <Typography>
                         </Typography>
-                        {selectedValue.performance.map((value) => {
+                        {data.map((value) => {
                             return (
                                 <div style={{ flex: 0.5 }} key={value.name}>
-                                    <Plot data={[{
-                                        x: value.values.x,
-                                        y: value.values.y,
-                                        type: 'scatter',
-                                        hoverinfo: 'text',
-                                        showlegend: false
-                                    }]}
+                                    <Plot data={value.values}
                                         layout={{
                                             title: value.name
                                         }} />
