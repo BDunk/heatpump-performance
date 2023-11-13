@@ -8,7 +8,7 @@ export const colorFromString = (str: String, alpha: number) => {
     }
     const hashString: String = hash.toString(10)
     console.log(hashString)
-    color = `hsla(${hashString.substring(1, 4)},50%,    50%,${alpha})`
+    color = `hsla(${hashString.substring(1, 4)},50%,50%,${alpha})`
     console.group(color)
     return color;
 }

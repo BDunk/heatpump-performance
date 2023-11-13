@@ -91,7 +91,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                     }
                     chiller.active = true
                     for (let ii =0; ii<temp_points.x.length; ii++){
-                        if (robustPointInPolygon(polygon, [x, y]) === 1) {
+                        if (robustPointInPolygon(polygon, [temp_points.x[ii], temp_points.y[ii]] ) === 1) {
                             chiller.active = false
                         }
                     }
