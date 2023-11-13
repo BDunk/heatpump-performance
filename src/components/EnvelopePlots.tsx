@@ -46,7 +46,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
             x: chiller['envelope']['x'],
             y: chiller['envelope']['y'],
             fill: 'toself',
-            fillcolor: colorFromString(chiller['name'], 0.5),
+            fillcolor: colorFromString(chiller['name'], 0.25),
             hoveron: 'fill+points',
             line: {
                 color: colorFromString(chiller['name'], 1)
@@ -151,7 +151,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                         }
                     },
                     yaxis: {
-                        range: [65, 145],
+                        range: [65, 155],
                         title:{
                             text:"T_cond (degF)"
                         }
