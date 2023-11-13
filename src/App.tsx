@@ -10,16 +10,13 @@ const App = () => {
 
 
   return (
-    <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column'}}>
       <header>
         <Typography variant={'h4'}>
           Heatpumps
         </Typography>
       </header>
       <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
-        <div style={{ flex: 1 }}>
-          <ChillerList chillerData={chillerData} />
-        </div>
         <div style={{ flex: 5, display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1 }}>
             <EnvelopePlots chillerData={chillerData} setChillerData={setChillerData} />

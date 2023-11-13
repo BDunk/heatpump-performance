@@ -35,13 +35,13 @@ export const DetailDialog = (props: DialogProps) => {
                         {selectedValue.name}
                     </DialogTitle>
 
-                    <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', flex: 1 }}>
 
                         <Typography>
                         </Typography>
                         {selectedValue.performance.map((value) => {
                             return (
-                                <div style={{ flex: 1 }} key={value.name}>
+                                <div style={{ flex: 0.5 }} key={value.name}>
                                     <Plot data={[{
                                         x: value.values.x,
                                         y: value.values.y,

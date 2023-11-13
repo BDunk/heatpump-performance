@@ -1,9 +1,10 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Chiller, XYArray } from "./commonInterfaces";
 import { Button } from "@mui/material";
 import Plot from "react-plotly.js";
 import robustPointInPolygon from "robust-point-in-polygon";
 import { colorFromString } from "./commonFunctions";
+import { DetailDialog } from "./DetailDialog";
 
 const getGrid = () => {
     let x_data: number[] = []
@@ -27,7 +28,9 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
     const { chillerData, setChillerData } = props;
     const [points, setPoints] = useState<XYArray>({ "x": [], "y": [] });
     const [grid,] = useState<XYArray>(getGrid())
-    const [hover, setHover] = useState<XYArray>()
+    const [rev, setRev] =useState<number>(0)
+    const [selectedChiller, setSelectedChiller] = useState<Chiller | null>(null)
+    const [open, setOpen] = useState(false);
 
     const resetActive = () => {
         setPoints({ "x": [], "y": [] })
@@ -52,47 +55,69 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
             marker: {
                 color: colorFromString(chiller['name'], 1)
             },
-            hoverinfo: 'name',
-            name: chiller['name']
+            hoverinfo: 'name+x+y',
+            name: chiller['name'],
         }
     })
 
-    const handleHover = (event: Plotly.PlotMouseEvent) =>{
-        const point = event.points[0];
-        console.log(point)
-        const x = point.x
-        const y = point.y
-        if (typeof x == "number" && typeof y == "number") {
-            setHover({ "x": [x], "y": [y] })
-        }
-    }
-
     const handleClick = (event: Plotly.PlotMouseEvent) => {
         const point = event.points[0];
-        console.log(point)
         const x = point.x
         const y = point.y
         if (typeof x == "number" && typeof y == "number") {
-            setPoints({ "x": [...points.x, x], "y": [...points.y, y] })
-            const temp = chillerData
-            setChillerData(temp.map((chiller) => {
-                let polygon: [number, number][] = []
-                for (let ii = 0; ii < chiller.envelope.x.length; ii++) {
-                    polygon = [...polygon, [chiller.envelope.x[ii], chiller.envelope.y[ii]]]
+            
+            if(point.curveNumber <= chillerTraces.length-1){
+                setSelectedChiller(chillerData[point.curveNumber]); 
+                handleClickOpen()
+            }
+            else{
+                const temp_points = {...points}
+                if (point.curveNumber === chillerTraces.length + 1){
+                    temp_points.x.push(x)
+                    temp_points.y.push(y)
+                    
                 }
-                if (robustPointInPolygon(polygon, [x, y]) === 1) {
-                    chiller.active = false
+                else if (point.curveNumber === chillerTraces.length ){
+                    temp_points.x.splice(point.pointNumber,1)
+                    temp_points.y.splice(point.pointNumber,1)
                 }
-                return chiller
-            }))
-        }
+                setPoints(temp_points)
+            
+                
+                const temp_chillers = chillerData
+
+                setChillerData(temp_chillers.map((chiller) => {
+                    let polygon: [number, number][] = []
+                    for (let ii = 0; ii < chiller.envelope.x.length; ii++) {
+                        polygon = [...polygon, [chiller.envelope.x[ii], chiller.envelope.y[ii]]]
+                    }
+                    chiller.active = true
+                    for (let ii =0; ii<temp_points.x.length; ii++){
+                        if (robustPointInPolygon(polygon, [x, y]) === 1) {
+                            chiller.active = false
+                        }
+                    }
+                    return chiller
+                }))
+                }
+            }
     }
 
+    useEffect(()=>{
+        setRev(rev+1)
+        console.log(rev+1)
+    },[points])
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
-        <>
-            <div>
-                {JSON.stringify(hover)}
-            </div>
+        <>              
             <Plot
                 style={{ width: '100%', height: '80%' }}
                 useResizeHandler={true}
@@ -102,21 +127,22 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                         x: points.x,
                         y: points.y,
                         type: 'scatter',
-                        hoverinfo: 'text',
                         mode: 'markers',
                         showlegend: false,
                         marker: {
                             color: 'rgb(219, 64, 82)',
                             size: 5
-                          }
+                          },
+                        name: 'Required Point',
+                        hoverinfo: 'name+x+y',
                     },
                     {
                         x: grid.x,
                         y: grid.y,
                         type: 'scatter',
-                        hoverinfo: 'text',
                         mode: 'none',
-                        showlegend: false
+                        showlegend: false,
+                        hoverinfo: 'x+y',
                     },
                     
                 ]) as Plotly.Data[]}
@@ -136,14 +162,19 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                     legend: {
                         itemclick: false,
                         itemdoubleclick: false
-                    }
+                    },
+                    datarevision: rev
                 }}
                 onClick={handleClick}
-                onHover={handleHover}
             />
             <Button onClick={resetActive}>
                 Clear Selected Points
             </Button>
+            <DetailDialog
+                selectedValue={selectedChiller}
+                open={open}
+                onClose={handleClose}
+            />
         </>
     )
 
