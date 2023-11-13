@@ -27,6 +27,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
     const { chillerData, setChillerData } = props;
     const [points, setPoints] = useState<XYArray>({ "x": [], "y": [] });
     const [grid,] = useState<XYArray>(getGrid())
+    const [hover, setHover] = useState<XYArray>()
 
     const resetActive = () => {
         setPoints({ "x": [], "y": [] })
@@ -56,9 +57,15 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
         }
     })
 
-    //const handleHover = (event: Plotly.PlotMouseEvent) =>{
-    //    console.log(event)
-    //}
+    const handleHover = (event: Plotly.PlotMouseEvent) =>{
+        const point = event.points[0];
+        console.log(point)
+        const x = point.x
+        const y = point.y
+        if (typeof x == "number" && typeof y == "number") {
+            setHover({ "x": [x], "y": [y] })
+        }
+    }
 
     const handleClick = (event: Plotly.PlotMouseEvent) => {
         const point = event.points[0];
@@ -83,7 +90,9 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
 
     return (
         <>
-
+            <div>
+                {JSON.stringify(hover)}
+            </div>
             <Plot
                 style={{ width: '100%', height: '80%' }}
                 useResizeHandler={true}
@@ -130,6 +139,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                     }
                 }}
                 onClick={handleClick}
+                onHover={handleHover}
             />
             <Button onClick={resetActive}>
                 Clear Selected Points
