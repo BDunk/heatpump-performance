@@ -10,7 +10,7 @@ const getGrid = () => {
     let x_data: number[] = []
     let y_data: number[] = []
 
-    for (let i = -20; i < 120; i=i+2) {
+    for (let i = -25; i < 120; i=i+2) {
         for (let j = 65; j < 145; j=j+2) {
             x_data = [...x_data, i]
             y_data = [...y_data, j]
@@ -145,7 +145,7 @@ export const EnvelopePlots = (props: EnvelopePlotsProps) => {
                 ]) as Plotly.Data[]}
                 layout={{
                     xaxis: {
-                        range: [-20, 120],
+                        range: [-25, 120],
                         title:{
                             text:"T_amb (degF)"
                         }
